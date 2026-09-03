@@ -2,12 +2,12 @@
 <html lang="pa">
 <head>
   <meta charset="UTF-8">
-  <title>ਪੰਜਾਬੀ ਵਿਆਕਰਨ ਤੇ ਸਪੈੱਲ ਚੈੱਕਰ | Newsroom Pro</title>
+  <title>AI Punjabi Grammar & Spell Corrector</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: #0b0f19;
+      background: #090d16;
       color: #f1f5f9;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       height: 100vh;
@@ -19,8 +19,8 @@
     }
 
     header {
-      background: #131c2e;
-      border: 1px solid #1e293b;
+      background: #111827;
+      border: 1px solid #1f2937;
       padding: 12px 18px;
       border-radius: 6px;
       display: flex;
@@ -32,19 +32,42 @@
       font-size: 16px;
       font-weight: bold;
       color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .status-badge {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid #059669;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
     }
 
     .workspace {
       flex: 1;
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
+      grid-template-columns: 1fr 1fr;
       gap: 14px;
       overflow: hidden;
     }
 
     .panel {
-      background: #131c2e;
-      border: 1px solid #1e293b;
+      background: #111827;
+      border: 1px solid #1f2937;
       border-radius: 6px;
       display: flex;
       flex-direction: column;
@@ -53,11 +76,11 @@
 
     .panel-head {
       padding: 10px 14px;
-      background: #0f172a;
-      border-bottom: 1px solid #1e293b;
+      background: #030712;
+      border-bottom: 1px solid #1f2937;
       font-size: 13px;
       font-weight: bold;
-      color: #94a3b8;
+      color: #9ca3af;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -65,215 +88,85 @@
 
     textarea {
       flex: 1;
-      background: #0b0f19;
+      background: #090d16;
       border: none;
       padding: 16px;
       color: #fff;
       font-size: 16px;
-      line-height: 1.7;
+      line-height: 1.8;
       resize: none;
       outline: none;
       font-family: inherit;
     }
 
-    .suggestions-list {
+    .output-box {
       flex: 1;
-      overflow-y: auto;
-      padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .error-card {
-      background: #0b0f19;
-      border: 1px solid #334155;
-      padding: 10px 12px;
-      border-radius: 6px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .error-card.spelling { border-left: 4px solid #ef4444; }
-    .error-card.grammar { border-left: 4px solid #f59e0b; }
-    .error-card.style { border-left: 4px solid #a855f7; }
-
-    .card-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .tag {
-      font-size: 10px;
-      font-weight: bold;
-      text-transform: uppercase;
-      padding: 2px 6px;
-      border-radius: 3px;
-    }
-    .tag.spelling { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-    .tag.grammar { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
-    .tag.style { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
-
-    .err-words {
-      font-size: 15px;
-    }
-
-    .err-text {
-      color: #f87171;
-      text-decoration: line-through;
-      font-weight: bold;
-    }
-
-    .sugg-text {
+      background: #090d16;
+      padding: 16px;
       color: #34d399;
-      font-weight: bold;
-      margin-left: 6px;
+      font-size: 16px;
+      line-height: 1.8;
+      overflow-y: auto;
+      white-space: pre-wrap;
     }
-
-    .desc {
-      font-size: 12px;
-      color: #94a3b8;
-    }
-
-    .btn-fix {
-      align-self: flex-end;
-      background: #059669;
-      color: #fff;
-      border: none;
-      padding: 4px 10px;
-      border-radius: 4px;
-      font-size: 12px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .btn-fix:hover { background: #047857; }
 
     .action-bar {
       display: flex;
-      gap: 10px;
+      align-items: center;
+      gap: 12px;
       padding: 10px 14px;
-      background: #0f172a;
-      border-top: 1px solid #1e293b;
+      background: #030712;
+      border-top: 1px solid #1f2937;
     }
 
     .btn {
       background: #2563eb;
       color: #fff;
       border: none;
-      padding: 8px 14px;
+      padding: 8px 16px;
       border-radius: 4px;
       font-size: 13px;
       font-weight: bold;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
     }
     .btn:hover { background: #1d4ed8; }
-    .btn-green { background: #16a34a; }
-    .btn-green:hover { background: #15803d; }
-    .btn-check { background: #d97706; }
+    .btn-ai { background: #7c3aed; }
+    .btn-ai:hover { background: #6d28d9; }
 
-    .stats {
-      font-size: 12px;
-      color: #94a3b8;
+    #loadingText {
+      display: none;
+      color: #38bdf8;
+      font-size: 13px;
+      font-weight: 500;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <div class="brand">✍️ ਪੰਜਾਬੀ ਵਿਆਕਰਨ (Grammar) ਤੇ ਸ਼ਬਦ-ਜੋੜ ਚੈੱਕਰ</div>
-    <div class="stats" id="statsDisplay">ਸਥਿਤੀ: ਤਿਆਰ</div>
+    <div class="brand">
+      <span>✨ Gemini AI ਪੰਜਾਬੀ ਵਿਆਕਰਨ ਤੇ ਸਪੈੱਲ ਸੁਧਾਰਕ (Newsroom Desk)</span>
+    </div>
+    <div class="status-badge">
+      <div class="status-dot"></div>
+      <span>AI ਇੰਜਣ ਕਨੈਕਟਡ</span>
+    </div>
   </header>
 
   <div class="workspace">
     <div class="panel">
       <div class="panel-head">
-        <span>ਖ਼ਬਰ / ਸਕ੍ਰਿਪਟ ਇੱਥੇ ਪੇਸਟ ਕਰੋ</span>
-        <button class="btn" style="padding: 2px 8px; font-size: 11px; background: #334155;" onclick="clearAll()">ਸਾਫ਼ ਕਰੋ</button>
+        <span>ਅਸਲ ਖ਼ਬਰ / ਸਕ੍ਰਿਪਟ (ਜਿਸ ਨੂੰ ਠੀਕ ਕਰਨਾ ਹੈ)</span>
+        <button class="btn" style="padding: 2px 8px; font-size: 11px; background: #374151;" onclick="document.getElementById('inputText').value=''">ਸਾਫ਼ ਕਰੋ</button>
       </div>
-      <textarea id="inputText" placeholder="ਇੱਥੇ ਪੰਜਾਬੀ ਟੈਕਸਟ ਲਿਖੋ... (ਉਦਾਹਰਣ: ਸਰਕਾਰ ਨੇ ਫੈਸਲਾ ਲਿਆ ਪਰ ਪੁਲਿਸ ਨੇ ਲੋਕਾਂ ਨੂੰ ਗ੍ਰਿਫਤਾਰ ਕੀਤਾ ਗਿਆ ਸੀ। ਉਹ ਪਾਣੀ ਪੀਤਾ।)"></textarea>
-      <div class="action-bar">
-        <button class="btn btn-check" onclick="runCheck()">🔍 ਵਿਆਕਰਨ ਤੇ ਸਪੈੱਲ ਚੈੱਕ ਕਰੋ</button>
-        <button class="btn btn-green" onclick="fixAllErrors()">⚡ ਸਾਰੀਆਂ ਗ਼ਲਤੀਆਂ ਠੀਕ ਕਰੋ</button>
-        <button class="btn" style="background:#475569;" onclick="copyText()">ਕਾਪੀ ਕਰੋ</button>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-head">
-        <span>ਲੱਭੀਆਂ ਗਈਆਂ ਗ਼ਲਤੀਆਂ ਤੇ ਵਿਆਕਰਨ ਸੁਝਾਅ</span>
-      </div>
-      <div class="suggestions-list" id="suggestionsBox">
-        <div style="color: #64748b; text-align: center; margin-top: 40px;">ਚੈੱਕ ਕਰਨ ਲਈ ਬਟਨ ਦਬਾਓ ਜਾਂ ਟੈਕਸਟ ਲਿਖੋ।</div>
-      </div>
-    </div>
-  </div>
-
-<script>
-  // ਵਿਆਕਰਨ (Grammar), ਕਾਰਕ (Case Markers) ਅਤੇ ਸਪੈੱਲ ਰੂਲਜ਼
-  const RULES = [
-    // 1. ਵਿਆਕਰਨਿਕ ਕਾਰਕ ਮੇਲ (Grammar / Case Errors)
-    {
-      wrong: "ਉਹ ਨੇ",
-      right: "ਉਸ ਨੇ",
-      type: "grammar",
-      desc: "ਸਰਵਨਾਵਿਕ ਗ਼ਲਤੀ: 'ਉਹ' ਨਾਲ 'ਨੇ' ਕਾਰਕ ਲੱਗਣ 'ਤੇ 'ਉਸ ਨੇ' ਬਣਦਾ ਹੈ।"
-    },
-    {
-      wrong: "ਇਹ ਨੇ",
-      right: "ਇਸ ਨੇ",
-      type: "grammar",
-      desc: "ਸਰਵਨਾਵਿਕ ਗ਼ਲਤੀ: 'ਇਹ ਨੇ' ਦੀ ਥਾਂ 'ਇਸ ਨੇ' ਵਰਤੋ।"
-    },
-    {
-      wrong: "ਉਹਨਾਂ ਨੇ ਕਿਹਾ ਸੀ ਕਿ ਉਹ",
-      right: "ਉਨ੍ਹਾਂ ਨੇ ਕਿਹਾ ਸੀ ਕਿ ਉਹ",
-      type: "grammar",
-      desc: "ਸ਼ੁੱਧ ਰੂਪ 'ਉਨ੍ਹਾਂ' ਹੈ।"
-    },
-    {
-      wrong: "ਕੀਤਾ ਗਿਆ ਸੀ",
-      right: "ਕੀਤਾ ਗਿਆ",
-      type: "style",
-      desc: "ਨਿਊਜ਼ ਸਟਾਈਲ: ਖ਼ਬਰਾਂ ਵਿੱਚ ਫਾਲਤੂ ਲੰਬੇ ਵਾਕਾਂ ਦੀ ਥਾਂ ਸਿੱਧੀ ਭਾਸ਼ਾ ਵਰਤੋ।"
-    },
-    {
-      wrong: "ਦੇ ਰਾਹੀਂ",
-      right: "ਰਾਹੀਂ",
-      type: "grammar",
-      desc: "'ਦੇ ਰਾਹੀਂ' ਵਿੱਚ 'ਦੇ' ਵਾਧੂ ਹੈ, ਸਿਰਫ਼ 'ਰਾਹੀਂ' ਸ਼ੁੱਧ ਹੈ।"
-    },
-    {
-      wrong: "ਦੇ ਦੁਆਰਾ",
-      right: "ਰਾਹੀਂ",
-      type: "style",
-      desc: "'ਦੁਆਰਾ' ਹਿੰਦੀ ਪ੍ਰਭਾਵ ਹੈ, ਪੰਜਾਬੀ ਵਿੱਚ 'ਰਾਹੀਂ' ਜਾਂ 'ਵੱਲੋਂ' ਢੁਕਵਾਂ ਹੈ।"
-    },
-    {
-      wrong: "ਦੇ ਵੱਲੋਂ",
-      right: "ਵੱਲੋਂ",
-      type: "grammar",
-      desc: "ਵਾਧੂ ਸੰਬੰਧਕ: ਸਿਰਫ਼ 'ਵੱਲੋਂ' ਲਿਖਣਾ ਸਹੀ ਹੈ।"
-    },
-    {
-      wrong: "ਵਾਪਿਸ",
-      right: "ਵਾਪਸ",
-      type: "grammar",
-      desc: "ਪੰਜਾਬੀ ਵਿੱਚ ਸਿਹਾਰੀ ਤੋਂ ਬਿਨਾਂ 'ਵਾਪਸ' ਸ਼ੁੱਧ ਹੈ।"
-    },
-
-    // 2. ਸ਼ਬਦ-ਜੋੜ ਤੇ ਅੱਖਰ-ਮੇਲ (Spelling Rules)
-    { wrong: "ਮੁਖ ਮੰਤਰੀ", right: "ਮੁੱਖ ਮੰਤਰੀ", type: "spelling", desc: "ਅੱਧਕ ਦੀ ਕਮੀ: 'ਮੁੱਖ' ਸ਼ੁੱਧ ਹੈ।" },
-    { wrong: "ਮੁਖਮੰਤਰੀ", right: "ਮੁੱਖ ਮੰਤਰੀ", type: "spelling", desc: "ਸ਼ਬਦ ਵੱਖਰੇ ਲਿਖੋ: 'ਮੁੱਖ ਮੰਤਰੀ'।" },
-    { wrong: "ਉਪਮੁੱਖ ਮੰਤਰੀ", right: "ਉਪ ਮੁੱਖ ਮੰਤਰੀ", type: "spelling", desc: "'ਉਪ' ਸ਼ਬਦ ਵੱਖਰਾ ਲਿਖੋ।" },
-    { wrong: "ਫੈਸਲਾ", right: "ਫ਼ੈਸਲਾ", type: "spelling", desc: "ਪੈਰ ਬਿੰਦੀ: 'ਫ਼ੈਸਲਾ' ਸ਼ੁੱਧ ਹੈ।" },
-    { wrong: "ਫੈਸਲੇ", right: "ਫ਼ੈਸਲੇ", type: "spelling", desc: "ਪੈਰ ਬਿੰਦੀ: 'ਫ਼ੈਸਲੇ' ਸ਼ੁੱਧ ਹੈ।" },
-    { wrong: "ਕਾਨੂਨ", right: "ਕਾਨੂੰਨ", type: "spelling", desc: "ਦੁਲੈਂਕੜ ਦੀ ਵਰਤੋਂ: 'ਕਾਨੂੰਨ' ਸ਼ੁੱਧ ਹੈ।" },
-    { wrong: "ਜਰੂਰੀ", right: "ਜ਼ਰੂਰੀ", type: "spelling", desc: "ਪੈਰ ਬਿੰਦੀ: 'ਜ਼ਰੂਰੀ' ਸ਼ੁੱਧ ਹੈ।" },
-    { wrong: "ਜਿਲ੍ਹਾ", right: "ਜ਼ਿਲ੍ਹਾ", type: "spelling", desc: "ਪੈਰ ਬਿੰਦੀ: 'ਜ਼ਿਲ੍ਹਾ' ਸ਼ੁੱਧ ਹੈ।" },
-    { wrong: "ਜਿਲ੍ਹੇ", right: "ਜ਼ਿਲ੍ਹੇ", type: "spelling", desc: "ਪੈਰ ਬਿੰਦੀ: 'ਜ਼ਿਲ੍ਹੇ' ਸ਼ੁੱਧ ਹੈ।" },
-    { wrong: "ਗ੍ਰਿਫਤਾਰ", right: "ਗ੍ਰਿਫ਼ਤਾਰ", type: "spelling", desc: "ਪੈਰ ਬਿੰਦੀ: 'ਗ੍ਰਿਫ਼ਤਾਰ'।" },
-    { wrong: "ਗ੍ਰਿਫਤਾਰੀ", right: "ਗ੍ਰਿਫ਼ਤਾਰੀ", type: "spelling", desc: "ਪੈਰ ਬਿੰਦੀ: 'ਗ੍ਰਿਫ਼ਤਾਰੀ'।" },
-    { wrong: "ਪੁਲਸ", right: "ਪੁਲਿਸ", type: "spelling", desc: "ਪ੍ਰਮਾਣਿਤ ਰੂਪ: 'ਪੁਲਿਸ'।" },
-    { wrong: "ਕਾਰਵਾਹੀ", right: "ਕਾਰਵਾਈ", type: "spelling
+      <textarea id="inputText" placeholder="ਇੱਥੇ ਪੰਜਾਬੀ ਟੈਕਸਟ ਲਿਖੋ ਜਾਂ ਪੇਸਟ ਕਰੋ...&#10;&#10;ਜਿਵੇਂ: ਮੁਖ ਮੰਤਰੀ ਨੇ ਫੈਸਲਾ ਲਿਆ ਪਰ ਪੁਲਿਸ ਨੇ ਓਹਨਾ ਨੂੰ ਗ੍ਰਿਫਤਾਰ ਕੀਤਾ
