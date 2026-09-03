@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pa">
+<head>
+  <meta charset="UTF-8">
+  <title>ਪੰਜਾਬੀ ਸਪੈੱਲ ਤੇ ਸ਼ਬਦ-ਜੋੜ ਚੈੱਕਰ | Live Newsroom</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0b0f19;
+      color: #f1f5f9;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 14px;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    header {
+      background: #131c2e;
+      border: 1px solid #1e293b;
+      padding: 12px 18px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      font-size: 16px;
+      font-weight: bold;
+      color: #38bdf8;
+    }
+
+    .workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .panel {
+      background: #131c2e;
+      border: 1px solid #1e293b;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 10px 14px;
+      background: #0f172a;
+      border-bottom: 1px solid #1e293b;
+      font-size: 13px;
+      font-weight: bold;
+      color: #94a3b8;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    textarea {
+      flex: 1;
+      background: #0b0f19;
+      border: none;
+      padding: 16px;
+      color: #fff;
+      font-size: 16px;
+      line-height: 1.7;
+      resize: none;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .suggestions-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .error-card {
+      background: #0b0f19;
+      border: 1px solid #334155;
+      border-left: 4px solid #ef4444;
+      padding: 10px 12px;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .err-word {
+      color: #ef4444;
+      text-decoration: line-through;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .sugg-word {
+      color: #10b981;
+      font-weight: bold;
+      font-size: 16px;
+      margin-left: 8px;
+    }
+
+    .btn-fix {
+      background: #059669;
+      color: #fff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn-fix:hover { background: #047857; }
+
+    .action-bar {
+      display: flex;
+      gap: 10px;
+      padding: 10px 14px;
+      background: #0f172a;
+      border-top: 1px solid #1e293b;
+    }
+
+    .btn {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn:hover { background: #1d4ed8; }
+    .btn-green { background: #16a34a; }
+    .btn-green:hover { background: #15803d; }
+
+    .stats {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">✍️ ਪੰਜਾਬੀ ਸਪੈੱਲ ਤੇ ਸ਼ਬਦ-ਜੋੜ ਚੈੱਕਰ (Online)</div>
+    <div class="stats" id="statsDisplay">ਗ਼ਲਤੀਆਂ: 0</div>
+  </header>
+
+  <div class="workspace">
+    <div class="panel">
+      <div class="panel-head">
+        <span>ਖ਼ਬਰ / ਸਕ੍ਰਿਪਟ ਇੱਥੇ ਪੇਸਟ ਕਰੋ</span>
+        <button class="btn" style="padding: 2px 8px; font-size: 11px; background: #334155;" onclick="clearAll()">ਸਾਫ਼ ਕਰੋ</button>
+      </div>
+      <textarea id="inputText" placeholder="ਇੱਥੇ ਪੰਜਾਬੀ ਟੈਕਸਟ ਲਿਖੋ ਜਾਂ ਪੇਸਟ ਕਰੋ..."></textarea>
+      <div class="action-bar">
+        <button class="btn btn-green" onclick="fixAllErrors()">⚡ ਸਾਰੀਆਂ ਗ਼ਲਤੀਆਂ ਠੀਕ ਕਰੋ</button>
+        <button class="btn" style="background:#475569;" onclick="copyText()">ਟੈਕਸਟ ਕਾਪੀ ਕਰੋ</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <span>ਪਛਾਣੀਆਂ ਗਈਆਂ ਗ਼ਲਤੀਆਂ</span>
+      </div>
+      <div class="suggestions-list" id="suggestionsBox">
+        <div style="color: #64748b; text-align: center; margin-top: 40px;">ਕੋਈ ਗ਼ਲਤੀ ਨਹੀਂ ਮਿਲੀ।</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ਪੰਜਾਬੀ ਜੋੜਾਂ ਦੀ ਲਿਸਟ
+  const DICT = [
+    { wrong: "ਮੁਖ ਮੰਤਰੀ", right: "ਮੁੱਖ ਮੰਤਰੀ" },
+    { wrong: "ਮੁਖਮੰਤਰੀ", right: "ਮੁੱਖ ਮੰਤਰੀ" },
+    { wrong: "ਉਪਮੁੱਖ ਮੰਤਰੀ", right: "ਉਪ ਮੁੱਖ ਮੰਤਰੀ" },
+    { wrong: "ਉਪ ਮੁਖ ਮੰਤਰੀ", right: "ਉਪ ਮੁੱਖ ਮੰਤਰੀ" },
+    { wrong: "ਫੈਸਲਾ", right: "ਫ਼ੈਸਲਾ" },
+    { wrong: "ਫੈਸਲੇ", right: "ਫ਼ੈਸਲੇ" },
+    { wrong: "ਕਾਨੂਨ", right: "ਕਾਨੂੰਨ" },
+    { wrong: "ਜਰੂਰੀ", right: "ਜ਼ਰੂਰੀ" },
+    { wrong: "ਜਿਲ੍ਹਾ", right: "ਜ਼ਿਲ੍ਹਾ" },
+    { wrong: "ਜਿਲ੍ਹੇ", right: "ਜ਼ਿਲ੍ਹੇ" },
+    { wrong: "ਜਿਲੇ", right: "ਜ਼ਿਲ੍ਹੇ" },
+    { wrong: "ਗ੍ਰਿਫਤਾਰ", right: "ਗ੍ਰਿਫ਼ਤਾਰ" },
+    { wrong: "ਗ੍ਰਿਫਤਾਰੀ", right: "ਗ੍ਰਿਫ਼ਤਾਰੀ" },
+    { wrong: "ਪੁਲਸ", right: "ਪੁਲਿਸ" },
+    { wrong: "ਕਾਰਵਾਹੀ", right: "ਕਾਰਵਾਈ" },
+    { wrong: "ਜਿੰਮੇਵਾਰ", right: "ਜ਼ਿੰਮੇਵਾਰ" },
+    { wrong: "ਜਿੰਮੇਵਾਰੀ", right: "ਜ਼ਿੰਮੇਵਾਰੀ" },
+    { wrong: "ਜਿੰਦਗੀ", right: "ਜ਼ਿੰਦਗੀ" },
+    { wrong: "ਜਮੀਨ", right: "ਜ਼ਮੀਨ" },
+    { wrong: "ਜਮੀਨਾਂ", right: "ਜ਼ਮੀਨਾਂ" },
+    { wrong: "ਖਬਰ", right: "ਖ਼ਬਰ" },
+    { wrong: "ਖਬਰਾਂ", right: "ਖ਼ਬਰਾਂ" },
+    { wrong: "ਖਾਸ", right: "ਖ਼ਾਸ" },
+    { wrong: "ਖੁਲਾਸਾ", right: "ਖ਼ੁਲਾਸਾ" },
+    { wrong: "ਗਲਤ", right: "ਗ਼ਲਤ" },
+    { wrong: "ਗਲਤੀ", right: "ਗ਼ਲਤੀ" },
+    { wrong: "ਵਿਰੁਧ", right: "ਵਿਰੁੱਧ" },
+    { wrong: "ਮੁਦਈ", right: "ਮੁੱਦਈ" },
+    { wrong: "ਮੁਦਾ", right: "ਮੁੱਦਾ" },
+    { wrong: "ਸ਼ਾਮਿਲ", right: "ਸ਼ਾਮਲ" },
+    { wrong: "ਹਾਜਰ", right: "ਹਾਜ਼ਰ" },
+    { wrong: "ਹਾਜਰੀ", right: "ਹਾਜ਼ਰੀ" }
+  ];
+
+  const textarea = document.getElementById('inputText');
+  const suggestionsBox = document.getElementById('suggestionsBox');
+  const statsDisplay = document.getElementById('statsDisplay');
+
+  let currentErrors = [];
+
+  textarea.addEventListener('input', runCheck);
+
+  function runCheck() {
+    const text = textarea.value;
+    currentErrors = [];
+
+    DICT.forEach(item => {
+      if (text.includes(item.wrong)) {
+        currentErrors.push(item);
+      }
+    });
+
+    statsDisplay.innerText = `ਗ਼ਲਤੀਆਂ: ${currentErrors.length}`;
+    renderSuggestions();
+  }
+
+  function renderSuggestions() {
+    if (currentErrors.length === 0) {
+      suggestionsBox.innerHTML = '<div style="color: #64748b; text-align: center; margin-top: 40px;">ਕੋਈ ਗ਼ਲਤੀ ਨਹੀਂ ਮਿਲੀ।</div>';
+      return;
+    }
+
+    let html = "";
+    currentErrors.forEach(item => {
+      html += `
+        <div class="error-card">
+          <div>
+            <span class="err-word">${item.wrong}</span> ➔ 
+            <span class="sugg-word">${item.right}</span>
+          </div>
+          <button class="btn-fix" onclick="fixSingle('${item.wrong}', '${item.right}')">ਠੀਕ ਕਰੋ</button>
+        </div>
+      `;
+    });
+    suggestionsBox.innerHTML = html;
+  }
+
+  function fixSingle(wrong, right) {
+    textarea.value = textarea.value.split(wrong).join(right);
+    runCheck();
+  }
+
+  function fixAllErrors() {
+    let text = textarea.value;
+    currentErrors.forEach(item => {
+      text = text.split(item.wrong).join(item.right);
+    });
+    textarea.value = text;
+    runCheck();
+  }
+
+  function copyText() {
+    navigator.clipboard.writeText(textarea.value).then(() => alert("ਟੈਕਸਟ ਕਾਪੀ ਹੋ ਗਿਆ!"));
+  }
+
+  function clearAll() {
+    textarea.value = "";
+    runCheck();
+  }
+</script>
+</body>
+</html>
