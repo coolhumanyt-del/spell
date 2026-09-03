@@ -10,11 +10,11 @@
       background: #090d16;
       color: #f1f5f9;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      min-height: 100vh;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      padding: 16px;
-      gap: 16px;
+      gap: 12px;
+      min-height: 100vh;
     }
 
     header {
@@ -27,11 +27,7 @@
       align-items: center;
     }
 
-    .brand {
-      font-size: 16px;
-      font-weight: bold;
-      color: #38bdf8;
-    }
+    .brand { font-size: 16px; font-weight: bold; color: #38bdf8; }
 
     .status-badge {
       background: rgba(16, 185, 129, 0.15);
@@ -43,6 +39,41 @@
       font-weight: bold;
     }
 
+    .controls-bar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      background: #111827;
+      padding: 12px 18px;
+      border-radius: 8px;
+      border: 1px solid #1f2937;
+    }
+
+    .btn {
+      background: #7c3aed;
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.2s;
+    }
+    .btn:hover { background: #6d28d9; }
+    .btn-copy { background: #059669; }
+    .btn-copy:hover { background: #047857; }
+    .btn-clear { background: #374151; padding: 5px 12px; font-size: 12px; }
+
+    #statusMsg {
+      font-size: 13px;
+      font-weight: bold;
+      color: #38bdf8;
+    }
+
     .workspace {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -50,17 +81,17 @@
       flex: 1;
     }
 
-    .panel {
+    .box-container {
       background: #111827;
       border: 1px solid #1e293b;
       border-radius: 8px;
       display: flex;
       flex-direction: column;
-      min-height: 520px;
+      height: 600px;
     }
 
-    .panel-head {
-      padding: 12px 16px;
+    .box-head {
+      padding: 10px 14px;
       background: #0f172a;
       border-bottom: 1px solid #1e293b;
       font-size: 13px;
@@ -74,72 +105,27 @@
     }
 
     textarea {
-      width: 100%;
-      height: 380px;
+      flex: 1;
       background: #030712;
-      border: 1px solid #1e293b;
-      border-radius: 6px;
-      margin: 12px;
-      width: calc(100% - 24px);
-      padding: 14px;
+      border: none;
+      padding: 16px;
       color: #fff;
       font-size: 16px;
       line-height: 1.8;
-      resize: vertical;
+      resize: none;
       outline: none;
       font-family: inherit;
     }
 
-    .output-box {
-      width: calc(100% - 24px);
-      height: 380px;
+    .output-area {
+      flex: 1;
       background: #030712;
-      border: 1px solid #1e293b;
-      border-radius: 6px;
-      margin: 12px;
-      padding: 14px;
+      padding: 16px;
       color: #34d399;
       font-size: 16px;
       line-height: 1.8;
       overflow-y: auto;
       white-space: pre-wrap;
-    }
-
-    .action-bar {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 16px;
-      background: #0f172a;
-      border-top: 1px solid #1e293b;
-      border-bottom-left-radius: 8px;
-      border-bottom-right-radius: 8px;
-      margin-top: auto;
-    }
-
-    .btn {
-      background: #2563eb;
-      color: #fff;
-      border: none;
-      padding: 9px 18px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: bold;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: 0.2s;
-    }
-    .btn:hover { background: #1d4ed8; }
-    .btn-ai { background: #7c3aed; }
-    .btn-ai:hover { background: #6d28d9; }
-
-    #loadingText {
-      display: none;
-      color: #38bdf8;
-      font-size: 13px;
-      font-weight: bold;
     }
   </style>
 </head>
@@ -147,59 +133,97 @@
 
   <header>
     <div class="brand">✨ Gemini AI ਪੰਜਾਬੀ ਵਿਆਕਰਨ ਤੇ ਸਪੈੱਲ ਸੁਧਾਰਕ</div>
-    <div class="status-badge">● AI ਇੰਜਣ ਤਿਆਰ</div>
+    <div class="status-badge">● API ਕਨੈਕਟਡ</div>
   </header>
 
+  <div class="controls-bar">
+    <button class="btn" id="runBtn" onclick="runCorrection()">
+      ✨ AI ਨਾਲ ਸ਼ੁੱਧ ਕਰੋ
+    </button>
+    <button class="btn btn-copy" onclick="copyOutput()">ਕਾਪੀ ਕਰੋ</button>
+    <span id="statusMsg"></span>
+  </div>
+
   <div class="workspace">
-    <div class="panel">
-      <div class="panel-head">
-        <span>ਅਸਲ ਖ਼ਬਰ / ਸਕ੍ਰਿਪਟ (ਜਿਸ ਨੂੰ ਠੀਕ ਕਰਨਾ ਹੈ)</span>
-        <button class="btn" style="padding: 4px 10px; font-size: 11px; background: #374151;" onclick="document.getElementById('inputText').value=''">ਸਾਫ਼ ਕਰੋ</button>
+    <!-- ਖੱਬਾ ਪਾਸਾ -->
+    <div class="box-container">
+      <div class="box-head">
+        <span>ਅਸਲ ਸਕ੍ਰਿਪਟ (ਜਿਸ ਨੂੰ ਠੀਕ ਕਰਨਾ ਹੈ)</span>
+        <button class="btn btn-clear" onclick="document.getElementById('inputBox').value=''">ਸਾਫ਼ ਕਰੋ</button>
       </div>
-      <textarea id="inputText" placeholder="ਇੱਥੇ ਪੰਜਾਬੀ ਟੈਕਸਟ ਪੇਸਟ ਕਰੋ ਜਾਂ ਲਿਖੋ...&#10;&#10;ਜਿਵੇਂ: ਮੁਖ ਮੰਤਰੀ ਨੇ ਫੈਸਲਾ ਲਿਆ ਪਰ ਪੁਲਿਸ ਨੇ ਓਹਨਾ ਨੂੰ ਗ੍ਰਿਫਤਾਰ ਕੀਤਾ ਗਿਆ ਸੀ ਅਤੇ ਉਹ ਪਾਣੀ ਪੀਤਾ।"></textarea>
-      <div class="action-bar">
-        <button class="btn btn-ai" id="fixBtn" onclick="correctWithGemini()">
-          ✨ AI ਨਾਲ ਸ਼ੁੱਧ ਕਰੋ
-        </button>
-        <span id="loadingText">⏳ Gemini ਠੀਕ ਕਰ ਰਿਹਾ ਹੈ...</span>
-      </div>
+      <textarea id="inputBox" placeholder="ਇੱਥੇ ਪੰਜਾਬੀ ਸਕ੍ਰਿਪਟ ਪੇਸਟ ਕਰੋ..."></textarea>
     </div>
 
-    <div class="panel">
-      <div class="panel-head">
+    <!-- ਸੱਜਾ ਪਾਸਾ -->
+    <div class="box-container">
+      <div class="box-head">
         <span>ਸ਼ੁੱਧ ਕੀਤੀ ਗਈ ਪੰਜਾਬੀ</span>
-        <button class="btn" style="padding: 4px 10px; font-size: 11px; background: #374151;" onclick="copyResult()">ਕਾਪੀ ਕਰੋ</button>
       </div>
-      <div class="output-box" id="outputText">ਸ਼ੁੱਧ ਕੀਤਾ ਗਿਆ ਟੈਕਸਟ ਇੱਥੇ ਦਿਖਾਈ ਦੇਵੇਗਾ...</div>
-      <div class="action-bar">
-        <button class="btn" style="background:#059669;" onclick="copyResult()">ਕਲਿੱਪਬੋਰਡ 'ਤੇ ਕਾਪੀ ਕਰੋ</button>
-      </div>
+      <div class="output-area" id="outputBox">ਨਤੀਜਾ ਇੱਥੇ ਦਿਖਾਈ ਦੇਵੇਗਾ...</div>
     </div>
   </div>
 
 <script>
-  const API_KEY = "AQ.Ab8RN6LFc-xNq8wbc9ios0wovXOQ0xOEELTRRjEZvYVcgj9d7w";
+  // ਤੁਹਾਡੀ ਨਵੀਂ API Key ਸਿੱਧੀ ਸ਼ਾਮਲ ਕੀਤੀ ਗਈ ਹੈ
+  const KEY_TOKEN = "AQ.Ab8RN6LyxBb0WzCRlhHnXXN-imAdECrD9HhraL4FR9E8JHVDFw";
 
-  async function correctWithGemini() {
-    const text = document.getElementById('inputText').value.trim();
+  async function runCorrection() {
+    const text = document.getElementById('inputBox').value.trim();
+    const status = document.getElementById('statusMsg');
+    const output = document.getElementById('outputBox');
+    const btn = document.getElementById('runBtn');
 
     if (!text) {
-      alert("ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ ਖੱਬੇ ਪਾਸੇ ਕੋਈ ਪੰਜਾਬੀ ਟੈਕਸਟ ਲਿਖੋ ਜਾਂ ਪੇਸਟ ਕਰੋ!");
+      alert("ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ ਕੋਈ ਪੰਜਾਬੀ ਟੈਕਸਟ ਪੇਸਟ ਕਰੋ!");
       return;
     }
 
-    const loader = document.getElementById('loadingText');
-    const output = document.getElementById('outputText');
-    const btn = document.getElementById('fixBtn');
-
-    loader.style.display = "inline";
+    status.innerText = "⏳ Gemini ਵਿਆਕਰਨ ਤੇ ਸਪੈੱਲ ਚੈੱਕ ਕਰ ਰਿਹਾ ਹੈ...";
+    status.style.color = "#38bdf8";
     btn.disabled = true;
     output.innerText = "ਪ੍ਰੋਸੈਸਿੰਗ ਹੋ ਰਹੀ ਹੈ...";
 
-    const prompt = `ਤੁਸੀਂ ਪੰਜਾਬੀ ਨਿਊਜ਼ਰੂਮ ਦੇ ਸੀਨੀਅਰ ਐਡੀਟਰ ਹੋ। ਹੇਠਾਂ ਦਿੱਤੇ ਗਏ ਪੰਜਾਬੀ ਟੈਕਸਟ ਦੇ ਸ਼ਬਦ-ਜੋੜ (Spelling), ਵਿਆਕਰਨ (Grammar), ਕਾਰਕ ਚਿੰਨ੍ਹ ਅਤੇ ਵਾਕ-ਬਣਤਰ ਨੂੰ ਬਿਲਕੁਲ ਸ਼ੁੱਧ ਕਰੋ।
+    const prompt = `ਤੁਸੀਂ ਪੰਜਾਬੀ ਨਿਊਜ਼ਰੂਮ ਦੇ ਸੀਨੀਅਰ ਐਡੀਟਰ ਹੋ। ਹੇਠਾਂ ਦਿੱਤੇ ਗਏ ਪੰਜਾਬੀ ਟੈਕਸਟ ਦੇ ਸ਼ਬਦ-ਜੋੜ (Spelling), ਵਿਆਕਰਨ (Grammar), ਕਾਰਕ ਚਿੰਨ੍ਹ ਅਤੇ ਵਾਕ-ਬਣਤਰ ਨੂੰ ਬਿਲਕੁਲ ਸ਼ੁੱਧ ਕਰੋ। ਇਤਿਹਾਸਕ ਅਤੇ ਧਾਰਮਿਕ ਸ਼ਬਦਾਵਲੀ ਦੀ ਮਰਿਆਦਾ ਕਾਇਮ ਰੱਖੋ।
 ਸਖ਼ਤ ਹਦਾਇਤ: ਸਿਰਫ਼ ਅਤੇ ਸਿਰਫ਼ ਸ਼ੁੱਧ ਕੀਤਾ ਗਿਆ ਪੰਜਾਬੀ ਟੈਕਸਟ ਹੀ ਲਿਖੋ। ਕੋਈ ਵਾਧੂ ਜਾਣ-ਪਛਾਣ, ਨੋਟ ਜਾਂ ਵਿਆਖਿਆ ਨਾ ਦਿਓ।
 
 ਅਸਲ ਟੈਕਸਟ:
 ${text}`;
 
     try {
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY_TOKEN}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }]
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        output.innerText = "❌ ਗ਼ਲਤੀ: " + data.error.message;
+        status.innerText = "ਅਸਫ਼ਲ ਰਿਹਾ";
+        status.style.color = "#ef4444";
+      } else {
+        const resText = data.candidates[0].content.parts[0].text.trim();
+        output.innerText = resText;
+        status.innerText = "✅ ਸਫ਼ਲਤਾਪੂਰਵਕ ਸ਼ੁੱਧ ਕੀਤਾ ਗਿਆ!";
+        status.style.color = "#10b981";
+      }
+    } catch (err) {
+      output.innerText = "❌ ਕਨੈਕਸ਼ਨ ਗ਼ਲਤੀ: " + err.message;
+      status.innerText = "ਗ਼ਲਤੀ ਆਈ";
+      status.style.color = "#ef4444";
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  function copyOutput() {
+    const text = document.getElementById('outputBox').innerText;
+    if (!text || text.startsWith("ਨਤੀਜਾ") || text.startsWith("❌")) return;
+    navigator.clipboard.writeText(text).then(() => alert("ਸ਼ੁੱਧ ਪੰਜਾਬੀ ਕਾਪੀ ਹੋ ਗਈ!"));
+  }
+</script>
+</body>
+</html>
