@@ -2,7 +2,7 @@
 <html lang="pa">
 <head>
   <meta charset="UTF-8">
-  <title>ਪੰਜਾਬੀ ਸਪੈੱਲ ਤੇ ਸ਼ਬਦ-ਜੋੜ ਚੈੱਕਰ | Live Newsroom</title>
+  <title>ਪੰਜਾਬੀ ਸਪੈੱਲ ਤੇ ਸ਼ਬਦ-ਜੋੜ ਚੈੱਕਰ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -143,6 +143,8 @@
     .btn:hover { background: #1d4ed8; }
     .btn-green { background: #16a34a; }
     .btn-green:hover { background: #15803d; }
+    .btn-check { background: #d97706; }
+    .btn-check:hover { background: #b45309; }
 
     .stats {
       font-size: 12px;
@@ -153,7 +155,7 @@
 <body>
 
   <header>
-    <div class="brand">✍️ ਪੰਜਾਬੀ ਸਪੈੱਲ ਤੇ ਸ਼ਬਦ-ਜੋੜ ਚੈੱਕਰ (Online)</div>
+    <div class="brand">✍️ ਪੰਜਾਬੀ ਸਪੈੱਲ ਤੇ ਸ਼ਬਦ-ਜੋੜ ਚੈੱਕਰ (Live)</div>
     <div class="stats" id="statsDisplay">ਗ਼ਲਤੀਆਂ: 0</div>
   </header>
 
@@ -163,8 +165,9 @@
         <span>ਖ਼ਬਰ / ਸਕ੍ਰਿਪਟ ਇੱਥੇ ਪੇਸਟ ਕਰੋ</span>
         <button class="btn" style="padding: 2px 8px; font-size: 11px; background: #334155;" onclick="clearAll()">ਸਾਫ਼ ਕਰੋ</button>
       </div>
-      <textarea id="inputText" placeholder="ਇੱਥੇ ਪੰਜਾਬੀ ਟੈਕਸਟ ਲਿਖੋ ਜਾਂ ਪੇਸਟ ਕਰੋ..."></textarea>
+      <textarea id="inputText" placeholder="ਖ਼ਬਰ ਇੱਥੇ ਪੇਸਟ ਕਰੋ... ਟੈਸਟ ਲਈ: ਮੁਖ ਮੰਤਰੀ ਨੇ ਫੈਸਲਾ ਲਿਆ ਪਰ ਪੁਲਸ ਨੇ ਗ੍ਰਿਫਤਾਰੀ ਨਹੀਂ ਕੀਤੀ।"></textarea>
       <div class="action-bar">
+        <button class="btn btn-check" onclick="runCheck()">🔍 ਚੈੱਕ ਕਰੋ</button>
         <button class="btn btn-green" onclick="fixAllErrors()">⚡ ਸਾਰੀਆਂ ਗ਼ਲਤੀਆਂ ਠੀਕ ਕਰੋ</button>
         <button class="btn" style="background:#475569;" onclick="copyText()">ਟੈਕਸਟ ਕਾਪੀ ਕਰੋ</button>
       </div>
@@ -175,13 +178,12 @@
         <span>ਪਛਾਣੀਆਂ ਗਈਆਂ ਗ਼ਲਤੀਆਂ</span>
       </div>
       <div class="suggestions-list" id="suggestionsBox">
-        <div style="color: #64748b; text-align: center; margin-top: 40px;">ਕੋਈ ਗ਼ਲਤੀ ਨਹੀਂ ਮਿਲੀ।</div>
+        <div style="color: #64748b; text-align: center; margin-top: 40px;">ਕੋਈ ਗ਼ਲਤੀ ਨਹੀਂ ਮਿਲੀ ਜਾਂ ਚੈੱਕ ਨਹੀਂ ਕੀਤਾ ਗਿਆ।</div>
       </div>
     </div>
   </div>
 
 <script>
-  // ਪੰਜਾਬੀ ਜੋੜਾਂ ਦੀ ਲਿਸਟ
   const DICT = [
     { wrong: "ਮੁਖ ਮੰਤਰੀ", right: "ਮੁੱਖ ਮੰਤਰੀ" },
     { wrong: "ਮੁਖਮੰਤਰੀ", right: "ਮੁੱਖ ਮੰਤਰੀ" },
@@ -223,14 +225,16 @@
 
   let currentErrors = [];
 
+  // ਟਾਈਪ ਕਰਨ, ਪੇਸਟ ਕਰਨ ਅਤੇ ਚੇਂਜ ਕਰਨ ਵੇਲੇ ਤੁਰੰਤ ਚੱਲੇਗਾ
   textarea.addEventListener('input', runCheck);
+  textarea.addEventListener('paste', () => setTimeout(runCheck, 50));
 
   function runCheck() {
     const text = textarea.value;
     currentErrors = [];
 
     DICT.forEach(item => {
-      if (text.includes(item.wrong)) {
+      if (text.indexOf(item.wrong) !== -1) {
         currentErrors.push(item);
       }
     });
@@ -246,23 +250,26 @@
     }
 
     let html = "";
-    currentErrors.forEach(item => {
+    currentErrors.forEach((item, idx) => {
       html += `
         <div class="error-card">
           <div>
             <span class="err-word">${item.wrong}</span> ➔ 
             <span class="sugg-word">${item.right}</span>
           </div>
-          <button class="btn-fix" onclick="fixSingle('${item.wrong}', '${item.right}')">ਠੀਕ ਕਰੋ</button>
+          <button class="btn-fix" onclick="fixSingle(${idx})">ਠੀਕ ਕਰੋ</button>
         </div>
       `;
     });
     suggestionsBox.innerHTML = html;
   }
 
-  function fixSingle(wrong, right) {
-    textarea.value = textarea.value.split(wrong).join(right);
-    runCheck();
+  function fixSingle(index) {
+    const item = currentErrors[index];
+    if (item) {
+      textarea.value = textarea.value.split(item.wrong).join(item.right);
+      runCheck();
+    }
   }
 
   function fixAllErrors() {
