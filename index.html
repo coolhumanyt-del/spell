@@ -133,7 +133,7 @@
 
   <header>
     <div class="brand">✨ Gemini AI ਪੰਜਾਬੀ ਵਿਆਕਰਨ ਤੇ ਸਪੈੱਲ ਸੁਧਾਰਕ</div>
-    <div class="status-badge">● API ਕਨੈਕਟਡ</div>
+    <div class="status-badge">● ਸਰਵਰ ਕਨੈਕਟਡ</div>
   </header>
 
   <div class="controls-bar">
@@ -145,16 +145,14 @@
   </div>
 
   <div class="workspace">
-    <!-- ਖੱਬਾ ਪਾਸਾ -->
     <div class="box-container">
       <div class="box-head">
-        <span>ਅਸਲ ਸਕ੍ਰਿਪਟ (ਜਿਸ ਨੂੰ ਠੀਕ ਕਰਨਾ ਹੈ)</span>
+        <span>ਅਸਲ ਸਕ੍ਰਿਪਟ (ਇੱਥੇ ਪੇਸਟ ਕਰੋ)</span>
         <button class="btn btn-clear" onclick="document.getElementById('inputBox').value=''">ਸਾਫ਼ ਕਰੋ</button>
       </div>
       <textarea id="inputBox" placeholder="ਇੱਥੇ ਪੰਜਾਬੀ ਸਕ੍ਰਿਪਟ ਪੇਸਟ ਕਰੋ..."></textarea>
     </div>
 
-    <!-- ਸੱਜਾ ਪਾਸਾ -->
     <div class="box-container">
       <div class="box-head">
         <span>ਸ਼ੁੱਧ ਕੀਤੀ ਗਈ ਪੰਜਾਬੀ</span>
@@ -164,8 +162,28 @@
   </div>
 
 <script>
-  // ਤੁਹਾਡੀ ਨਵੀਂ API Key ਸਿੱਧੀ ਸ਼ਾਮਲ ਕੀਤੀ ਗਈ ਹੈ
   const KEY_TOKEN = "AQ.Ab8RN6LyxBb0WzCRlhHnXXN-imAdECrD9HhraL4FR9E8JHVDFw";
+
+  // ਉਪਲਬਧ ਮਾਡਲਾਂ ਦੀ ਲਿਸਟ
+  const MODEL_CANDIDATES = [
+    "gemini-2.0-flash",
+    "gemini-2.5-flash",
+    "gemini-1.5-flash-latest",
+    "gemini-1.5-pro",
+    "gemini-pro"
+  ];
+
+  async function callGemini(modelName, prompt) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${KEY_TOKEN}`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }]
+      })
+    });
+    return await res.json();
+  }
 
   async function runCorrection() {
     const text = document.getElementById('inputBox').value.trim();
@@ -178,40 +196,45 @@
       return;
     }
 
-    status.innerText = "⏳ Gemini ਵਿਆਕਰਨ ਤੇ ਸਪੈੱਲ ਚੈੱਕ ਕਰ ਰਿਹਾ ਹੈ...";
+    status.innerText = "⏳ Gemini ਪੰਜਾਬੀ ਸ਼ੁੱਧ ਕਰ ਰਿਹਾ ਹੈ...";
     status.style.color = "#38bdf8";
     btn.disabled = true;
-    output.innerText = "ਪ੍ਰੋਸੈਸਿੰਗ ਹੋ ਰਹੀ ਹੈ...";
+    output.innerText = "ਪ੍ਰੋਸੈਸਿੰਗ ਹੋ ਰਹੀ ਹੈ, ਕਿਰਪਾ ਕਰਕੇ ਉਡੀਕ ਕਰੋ...";
 
-    const prompt = `ਤੁਸੀਂ ਪੰਜਾਬੀ ਨਿਊਜ਼ਰੂਮ ਦੇ ਸੀਨੀਅਰ ਐਡੀਟਰ ਹੋ। ਹੇਠਾਂ ਦਿੱਤੇ ਗਏ ਪੰਜਾਬੀ ਟੈਕਸਟ ਦੇ ਸ਼ਬਦ-ਜੋੜ (Spelling), ਵਿਆਕਰਨ (Grammar), ਕਾਰਕ ਚਿੰਨ੍ਹ ਅਤੇ ਵਾਕ-ਬਣਤਰ ਨੂੰ ਬਿਲਕੁਲ ਸ਼ੁੱਧ ਕਰੋ। ਇਤਿਹਾਸਕ ਅਤੇ ਧਾਰਮਿਕ ਸ਼ਬਦਾਵਲੀ ਦੀ ਮਰਿਆਦਾ ਕਾਇਮ ਰੱਖੋ।
+    const prompt = `ਤੁਸੀਂ ਪੰਜਾਬੀ ਨਿਊਜ਼ਰੂਮ ਦੇ ਸੀਨੀਅਰ ਐਡੀਟਰ ਹੋ। ਹੇਠਾਂ ਦਿੱਤੇ ਗਏ ਪੰਜਾਬੀ ਟੈਕਸਟ ਦੇ ਸ਼ਬਦ-ਜੋੜ (Spelling), ਵਿਆਕਰਨ (Grammar), ਕਾਰਕ ਚਿੰਨ੍ਹ ਅਤੇ ਵਾਕ-ਬਣਤਰ ਨੂੰ ਬਿਲਕੁਲ ਸ਼ੁੱਧ ਕਰੋ। ਇਤਿਹਾਸਕ, ਧਾਰਮਿਕ ਅਤੇ ਸਤਿਕਾਰਯੋਗ ਸ਼ਬਦਾਵਲੀ ਦੀ ਮਰਿਆਦਾ ਕਾਇਮ ਰੱਖੋ।
 ਸਖ਼ਤ ਹਦਾਇਤ: ਸਿਰਫ਼ ਅਤੇ ਸਿਰਫ਼ ਸ਼ੁੱਧ ਕੀਤਾ ਗਿਆ ਪੰਜਾਬੀ ਟੈਕਸਟ ਹੀ ਲਿਖੋ। ਕੋਈ ਵਾਧੂ ਜਾਣ-ਪਛਾਣ, ਨੋਟ ਜਾਂ ਵਿਆਖਿਆ ਨਾ ਦਿਓ।
 
 ਅਸਲ ਟੈਕਸਟ:
 ${text}`;
 
     try {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${KEY_TOKEN}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }]
-        })
-      });
+      let success = false;
+      let lastError = "";
 
-      const data = await res.json();
+      // ਸਹੀ ਐਕਟਿਵ ਮਾਡਲ ਨੂੰ ਆਟੋਮੈਟਿਕ ਲੱਭ ਕੇ ਚਲਾਉਣਾ
+      for (const model of MODEL_CANDIDATES) {
+        status.innerText = `⏳ ਕਨੈਕਟ ਹੋ ਰਿਹਾ ਹੈ (${model})...`;
+        const data = await callGemini(model, prompt);
 
-      if (data.error) {
-        output.innerText = "❌ ਗ਼ਲਤੀ: " + data.error.message;
+        if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+          output.innerText = data.candidates[0].content.parts[0].text.trim();
+          status.innerText = "✅ ਸਫ਼ਲਤਾਪੂਰਵਕ ਸ਼ੁੱਧ ਕੀਤਾ ਗਿਆ!";
+          status.style.color = "#10b981";
+          success = true;
+          break;
+        } else if (data.error) {
+          lastError = data.error.message;
+        }
+      }
+
+      if (!success) {
+        output.innerText = "❌ ਗ਼ਲਤੀ: " + lastError;
         status.innerText = "ਅਸਫ਼ਲ ਰਿਹਾ";
         status.style.color = "#ef4444";
-      } else {
-        const resText = data.candidates[0].content.parts[0].text.trim();
-        output.innerText = resText;
-        status.innerText = "✅ ਸਫ਼ਲਤਾਪੂਰਵਕ ਸ਼ੁੱਧ ਕੀਤਾ ਗਿਆ!";
-        status.style.color = "#10b981";
       }
+
     } catch (err) {
-      output.innerText = "❌ ਕਨੈਕਸ਼ਨ ਗ਼ਲਤੀ: " + err.message;
+      output.innerText = "❌ ਨੈੱਟਵਰਕ ਗ਼ਲਤੀ: " + err.message;
       status.innerText = "ਗ਼ਲਤੀ ਆਈ";
       status.style.color = "#ef4444";
     } finally {
