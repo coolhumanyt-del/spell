@@ -2,7 +2,7 @@
 <html lang="pa">
 <head>
   <meta charset="UTF-8">
-  <title>ਪੰਜਾਬੀ ਸਪੈੱਲ ਤੇ ਸ਼ਬਦ-ਜੋੜ ਚੈੱਕਰ</title>
+  <title>ਪੰਜਾਬੀ ਵਿਆਕਰਨ ਤੇ ਸਪੈੱਲ ਚੈੱਕਰ | Newsroom Pro</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -82,39 +82,67 @@
       padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
     }
 
     .error-card {
       background: #0b0f19;
       border: 1px solid #334155;
-      border-left: 4px solid #ef4444;
       padding: 10px 12px;
-      border-radius: 4px;
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .error-card.spelling { border-left: 4px solid #ef4444; }
+    .error-card.grammar { border-left: 4px solid #f59e0b; }
+    .error-card.style { border-left: 4px solid #a855f7; }
+
+    .card-top {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
-    .err-word {
-      color: #ef4444;
-      text-decoration: line-through;
+    .tag {
+      font-size: 10px;
       font-weight: bold;
-      font-size: 16px;
+      text-transform: uppercase;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .tag.spelling { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .tag.grammar { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    .tag.style { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
+
+    .err-words {
+      font-size: 15px;
     }
 
-    .sugg-word {
-      color: #10b981;
+    .err-text {
+      color: #f87171;
+      text-decoration: line-through;
       font-weight: bold;
-      font-size: 16px;
-      margin-left: 8px;
+    }
+
+    .sugg-text {
+      color: #34d399;
+      font-weight: bold;
+      margin-left: 6px;
+    }
+
+    .desc {
+      font-size: 12px;
+      color: #94a3b8;
     }
 
     .btn-fix {
+      align-self: flex-end;
       background: #059669;
       color: #fff;
       border: none;
-      padding: 6px 12px;
+      padding: 4px 10px;
       border-radius: 4px;
       font-size: 12px;
       cursor: pointer;
@@ -144,7 +172,6 @@
     .btn-green { background: #16a34a; }
     .btn-green:hover { background: #15803d; }
     .btn-check { background: #d97706; }
-    .btn-check:hover { background: #b45309; }
 
     .stats {
       font-size: 12px;
@@ -155,8 +182,8 @@
 <body>
 
   <header>
-    <div class="brand">✍️ ਪੰਜਾਬੀ ਸਪੈੱਲ ਤੇ ਸ਼ਬਦ-ਜੋੜ ਚੈੱਕਰ (Live)</div>
-    <div class="stats" id="statsDisplay">ਗ਼ਲਤੀਆਂ: 0</div>
+    <div class="brand">✍️ ਪੰਜਾਬੀ ਵਿਆਕਰਨ (Grammar) ਤੇ ਸ਼ਬਦ-ਜੋੜ ਚੈੱਕਰ</div>
+    <div class="stats" id="statsDisplay">ਸਥਿਤੀ: ਤਿਆਰ</div>
   </header>
 
   <div class="workspace">
@@ -165,130 +192,88 @@
         <span>ਖ਼ਬਰ / ਸਕ੍ਰਿਪਟ ਇੱਥੇ ਪੇਸਟ ਕਰੋ</span>
         <button class="btn" style="padding: 2px 8px; font-size: 11px; background: #334155;" onclick="clearAll()">ਸਾਫ਼ ਕਰੋ</button>
       </div>
-      <textarea id="inputText" placeholder="ਖ਼ਬਰ ਇੱਥੇ ਪੇਸਟ ਕਰੋ... ਟੈਸਟ ਲਈ: ਮੁਖ ਮੰਤਰੀ ਨੇ ਫੈਸਲਾ ਲਿਆ ਪਰ ਪੁਲਸ ਨੇ ਗ੍ਰਿਫਤਾਰੀ ਨਹੀਂ ਕੀਤੀ।"></textarea>
+      <textarea id="inputText" placeholder="ਇੱਥੇ ਪੰਜਾਬੀ ਟੈਕਸਟ ਲਿਖੋ... (ਉਦਾਹਰਣ: ਸਰਕਾਰ ਨੇ ਫੈਸਲਾ ਲਿਆ ਪਰ ਪੁਲਿਸ ਨੇ ਲੋਕਾਂ ਨੂੰ ਗ੍ਰਿਫਤਾਰ ਕੀਤਾ ਗਿਆ ਸੀ। ਉਹ ਪਾਣੀ ਪੀਤਾ।)"></textarea>
       <div class="action-bar">
-        <button class="btn btn-check" onclick="runCheck()">🔍 ਚੈੱਕ ਕਰੋ</button>
+        <button class="btn btn-check" onclick="runCheck()">🔍 ਵਿਆਕਰਨ ਤੇ ਸਪੈੱਲ ਚੈੱਕ ਕਰੋ</button>
         <button class="btn btn-green" onclick="fixAllErrors()">⚡ ਸਾਰੀਆਂ ਗ਼ਲਤੀਆਂ ਠੀਕ ਕਰੋ</button>
-        <button class="btn" style="background:#475569;" onclick="copyText()">ਟੈਕਸਟ ਕਾਪੀ ਕਰੋ</button>
+        <button class="btn" style="background:#475569;" onclick="copyText()">ਕਾਪੀ ਕਰੋ</button>
       </div>
     </div>
 
     <div class="panel">
       <div class="panel-head">
-        <span>ਪਛਾਣੀਆਂ ਗਈਆਂ ਗ਼ਲਤੀਆਂ</span>
+        <span>ਲੱਭੀਆਂ ਗਈਆਂ ਗ਼ਲਤੀਆਂ ਤੇ ਵਿਆਕਰਨ ਸੁਝਾਅ</span>
       </div>
       <div class="suggestions-list" id="suggestionsBox">
-        <div style="color: #64748b; text-align: center; margin-top: 40px;">ਕੋਈ ਗ਼ਲਤੀ ਨਹੀਂ ਮਿਲੀ ਜਾਂ ਚੈੱਕ ਨਹੀਂ ਕੀਤਾ ਗਿਆ।</div>
+        <div style="color: #64748b; text-align: center; margin-top: 40px;">ਚੈੱਕ ਕਰਨ ਲਈ ਬਟਨ ਦਬਾਓ ਜਾਂ ਟੈਕਸਟ ਲਿਖੋ।</div>
       </div>
     </div>
   </div>
 
 <script>
-  const DICT = [
-    { wrong: "ਮੁਖ ਮੰਤਰੀ", right: "ਮੁੱਖ ਮੰਤਰੀ" },
-    { wrong: "ਮੁਖਮੰਤਰੀ", right: "ਮੁੱਖ ਮੰਤਰੀ" },
-    { wrong: "ਉਪਮੁੱਖ ਮੰਤਰੀ", right: "ਉਪ ਮੁੱਖ ਮੰਤਰੀ" },
-    { wrong: "ਉਪ ਮੁਖ ਮੰਤਰੀ", right: "ਉਪ ਮੁੱਖ ਮੰਤਰੀ" },
-    { wrong: "ਫੈਸਲਾ", right: "ਫ਼ੈਸਲਾ" },
-    { wrong: "ਫੈਸਲੇ", right: "ਫ਼ੈਸਲੇ" },
-    { wrong: "ਕਾਨੂਨ", right: "ਕਾਨੂੰਨ" },
-    { wrong: "ਜਰੂਰੀ", right: "ਜ਼ਰੂਰੀ" },
-    { wrong: "ਜਿਲ੍ਹਾ", right: "ਜ਼ਿਲ੍ਹਾ" },
-    { wrong: "ਜਿਲ੍ਹੇ", right: "ਜ਼ਿਲ੍ਹੇ" },
-    { wrong: "ਜਿਲੇ", right: "ਜ਼ਿਲ੍ਹੇ" },
-    { wrong: "ਗ੍ਰਿਫਤਾਰ", right: "ਗ੍ਰਿਫ਼ਤਾਰ" },
-    { wrong: "ਗ੍ਰਿਫਤਾਰੀ", right: "ਗ੍ਰਿਫ਼ਤਾਰੀ" },
-    { wrong: "ਪੁਲਸ", right: "ਪੁਲਿਸ" },
-    { wrong: "ਕਾਰਵਾਹੀ", right: "ਕਾਰਵਾਈ" },
-    { wrong: "ਜਿੰਮੇਵਾਰ", right: "ਜ਼ਿੰਮੇਵਾਰ" },
-    { wrong: "ਜਿੰਮੇਵਾਰੀ", right: "ਜ਼ਿੰਮੇਵਾਰੀ" },
-    { wrong: "ਜਿੰਦਗੀ", right: "ਜ਼ਿੰਦਗੀ" },
-    { wrong: "ਜਮੀਨ", right: "ਜ਼ਮੀਨ" },
-    { wrong: "ਜਮੀਨਾਂ", right: "ਜ਼ਮੀਨਾਂ" },
-    { wrong: "ਖਬਰ", right: "ਖ਼ਬਰ" },
-    { wrong: "ਖਬਰਾਂ", right: "ਖ਼ਬਰਾਂ" },
-    { wrong: "ਖਾਸ", right: "ਖ਼ਾਸ" },
-    { wrong: "ਖੁਲਾਸਾ", right: "ਖ਼ੁਲਾਸਾ" },
-    { wrong: "ਗਲਤ", right: "ਗ਼ਲਤ" },
-    { wrong: "ਗਲਤੀ", right: "ਗ਼ਲਤੀ" },
-    { wrong: "ਵਿਰੁਧ", right: "ਵਿਰੁੱਧ" },
-    { wrong: "ਮੁਦਈ", right: "ਮੁੱਦਈ" },
-    { wrong: "ਮੁਦਾ", right: "ਮੁੱਦਾ" },
-    { wrong: "ਸ਼ਾਮਿਲ", right: "ਸ਼ਾਮਲ" },
-    { wrong: "ਹਾਜਰ", right: "ਹਾਜ਼ਰ" },
-    { wrong: "ਹਾਜਰੀ", right: "ਹਾਜ਼ਰੀ" }
-  ];
+  // ਵਿਆਕਰਨ (Grammar), ਕਾਰਕ (Case Markers) ਅਤੇ ਸਪੈੱਲ ਰੂਲਜ਼
+  const RULES = [
+    // 1. ਵਿਆਕਰਨਿਕ ਕਾਰਕ ਮੇਲ (Grammar / Case Errors)
+    {
+      wrong: "ਉਹ ਨੇ",
+      right: "ਉਸ ਨੇ",
+      type: "grammar",
+      desc: "ਸਰਵਨਾਵਿਕ ਗ਼ਲਤੀ: 'ਉਹ' ਨਾਲ 'ਨੇ' ਕਾਰਕ ਲੱਗਣ 'ਤੇ 'ਉਸ ਨੇ' ਬਣਦਾ ਹੈ।"
+    },
+    {
+      wrong: "ਇਹ ਨੇ",
+      right: "ਇਸ ਨੇ",
+      type: "grammar",
+      desc: "ਸਰਵਨਾਵਿਕ ਗ਼ਲਤੀ: 'ਇਹ ਨੇ' ਦੀ ਥਾਂ 'ਇਸ ਨੇ' ਵਰਤੋ।"
+    },
+    {
+      wrong: "ਉਹਨਾਂ ਨੇ ਕਿਹਾ ਸੀ ਕਿ ਉਹ",
+      right: "ਉਨ੍ਹਾਂ ਨੇ ਕਿਹਾ ਸੀ ਕਿ ਉਹ",
+      type: "grammar",
+      desc: "ਸ਼ੁੱਧ ਰੂਪ 'ਉਨ੍ਹਾਂ' ਹੈ।"
+    },
+    {
+      wrong: "ਕੀਤਾ ਗਿਆ ਸੀ",
+      right: "ਕੀਤਾ ਗਿਆ",
+      type: "style",
+      desc: "ਨਿਊਜ਼ ਸਟਾਈਲ: ਖ਼ਬਰਾਂ ਵਿੱਚ ਫਾਲਤੂ ਲੰਬੇ ਵਾਕਾਂ ਦੀ ਥਾਂ ਸਿੱਧੀ ਭਾਸ਼ਾ ਵਰਤੋ।"
+    },
+    {
+      wrong: "ਦੇ ਰਾਹੀਂ",
+      right: "ਰਾਹੀਂ",
+      type: "grammar",
+      desc: "'ਦੇ ਰਾਹੀਂ' ਵਿੱਚ 'ਦੇ' ਵਾਧੂ ਹੈ, ਸਿਰਫ਼ 'ਰਾਹੀਂ' ਸ਼ੁੱਧ ਹੈ।"
+    },
+    {
+      wrong: "ਦੇ ਦੁਆਰਾ",
+      right: "ਰਾਹੀਂ",
+      type: "style",
+      desc: "'ਦੁਆਰਾ' ਹਿੰਦੀ ਪ੍ਰਭਾਵ ਹੈ, ਪੰਜਾਬੀ ਵਿੱਚ 'ਰਾਹੀਂ' ਜਾਂ 'ਵੱਲੋਂ' ਢੁਕਵਾਂ ਹੈ।"
+    },
+    {
+      wrong: "ਦੇ ਵੱਲੋਂ",
+      right: "ਵੱਲੋਂ",
+      type: "grammar",
+      desc: "ਵਾਧੂ ਸੰਬੰਧਕ: ਸਿਰਫ਼ 'ਵੱਲੋਂ' ਲਿਖਣਾ ਸਹੀ ਹੈ।"
+    },
+    {
+      wrong: "ਵਾਪਿਸ",
+      right: "ਵਾਪਸ",
+      type: "grammar",
+      desc: "ਪੰਜਾਬੀ ਵਿੱਚ ਸਿਹਾਰੀ ਤੋਂ ਬਿਨਾਂ 'ਵਾਪਸ' ਸ਼ੁੱਧ ਹੈ।"
+    },
 
-  const textarea = document.getElementById('inputText');
-  const suggestionsBox = document.getElementById('suggestionsBox');
-  const statsDisplay = document.getElementById('statsDisplay');
-
-  let currentErrors = [];
-
-  // ਟਾਈਪ ਕਰਨ, ਪੇਸਟ ਕਰਨ ਅਤੇ ਚੇਂਜ ਕਰਨ ਵੇਲੇ ਤੁਰੰਤ ਚੱਲੇਗਾ
-  textarea.addEventListener('input', runCheck);
-  textarea.addEventListener('paste', () => setTimeout(runCheck, 50));
-
-  function runCheck() {
-    const text = textarea.value;
-    currentErrors = [];
-
-    DICT.forEach(item => {
-      if (text.indexOf(item.wrong) !== -1) {
-        currentErrors.push(item);
-      }
-    });
-
-    statsDisplay.innerText = `ਗ਼ਲਤੀਆਂ: ${currentErrors.length}`;
-    renderSuggestions();
-  }
-
-  function renderSuggestions() {
-    if (currentErrors.length === 0) {
-      suggestionsBox.innerHTML = '<div style="color: #64748b; text-align: center; margin-top: 40px;">ਕੋਈ ਗ਼ਲਤੀ ਨਹੀਂ ਮਿਲੀ।</div>';
-      return;
-    }
-
-    let html = "";
-    currentErrors.forEach((item, idx) => {
-      html += `
-        <div class="error-card">
-          <div>
-            <span class="err-word">${item.wrong}</span> ➔ 
-            <span class="sugg-word">${item.right}</span>
-          </div>
-          <button class="btn-fix" onclick="fixSingle(${idx})">ਠੀਕ ਕਰੋ</button>
-        </div>
-      `;
-    });
-    suggestionsBox.innerHTML = html;
-  }
-
-  function fixSingle(index) {
-    const item = currentErrors[index];
-    if (item) {
-      textarea.value = textarea.value.split(item.wrong).join(item.right);
-      runCheck();
-    }
-  }
-
-  function fixAllErrors() {
-    let text = textarea.value;
-    currentErrors.forEach(item => {
-      text = text.split(item.wrong).join(item.right);
-    });
-    textarea.value = text;
-    runCheck();
-  }
-
-  function copyText() {
-    navigator.clipboard.writeText(textarea.value).then(() => alert("ਟੈਕਸਟ ਕਾਪੀ ਹੋ ਗਿਆ!"));
-  }
-
-  function clearAll() {
-    textarea.value = "";
-    runCheck();
-  }
-</script>
-</body>
-</html>
+    // 2. ਸ਼ਬਦ-ਜੋੜ ਤੇ ਅੱਖਰ-ਮੇਲ (Spelling Rules)
+    { wrong: "ਮੁਖ ਮੰਤਰੀ", right: "ਮੁੱਖ ਮੰਤਰੀ", type: "spelling", desc: "ਅੱਧਕ ਦੀ ਕਮੀ: 'ਮੁੱਖ' ਸ਼ੁੱਧ ਹੈ।" },
+    { wrong: "ਮੁਖਮੰਤਰੀ", right: "ਮੁੱਖ ਮੰਤਰੀ", type: "spelling", desc: "ਸ਼ਬਦ ਵੱਖਰੇ ਲਿਖੋ: 'ਮੁੱਖ ਮੰਤਰੀ'।" },
+    { wrong: "ਉਪਮੁੱਖ ਮੰਤਰੀ", right: "ਉਪ ਮੁੱਖ ਮੰਤਰੀ", type: "spelling", desc: "'ਉਪ' ਸ਼ਬਦ ਵੱਖਰਾ ਲਿਖੋ।" },
+    { wrong: "ਫੈਸਲਾ", right: "ਫ਼ੈਸਲਾ", type: "spelling", desc: "ਪੈਰ ਬਿੰਦੀ: 'ਫ਼ੈਸਲਾ' ਸ਼ੁੱਧ ਹੈ।" },
+    { wrong: "ਫੈਸਲੇ", right: "ਫ਼ੈਸਲੇ", type: "spelling", desc: "ਪੈਰ ਬਿੰਦੀ: 'ਫ਼ੈਸਲੇ' ਸ਼ੁੱਧ ਹੈ।" },
+    { wrong: "ਕਾਨੂਨ", right: "ਕਾਨੂੰਨ", type: "spelling", desc: "ਦੁਲੈਂਕੜ ਦੀ ਵਰਤੋਂ: 'ਕਾਨੂੰਨ' ਸ਼ੁੱਧ ਹੈ।" },
+    { wrong: "ਜਰੂਰੀ", right: "ਜ਼ਰੂਰੀ", type: "spelling", desc: "ਪੈਰ ਬਿੰਦੀ: 'ਜ਼ਰੂਰੀ' ਸ਼ੁੱਧ ਹੈ।" },
+    { wrong: "ਜਿਲ੍ਹਾ", right: "ਜ਼ਿਲ੍ਹਾ", type: "spelling", desc: "ਪੈਰ ਬਿੰਦੀ: 'ਜ਼ਿਲ੍ਹਾ' ਸ਼ੁੱਧ ਹੈ।" },
+    { wrong: "ਜਿਲ੍ਹੇ", right: "ਜ਼ਿਲ੍ਹੇ", type: "spelling", desc: "ਪੈਰ ਬਿੰਦੀ: 'ਜ਼ਿਲ੍ਹੇ' ਸ਼ੁੱਧ ਹੈ।" },
+    { wrong: "ਗ੍ਰਿਫਤਾਰ", right: "ਗ੍ਰਿਫ਼ਤਾਰ", type: "spelling", desc: "ਪੈਰ ਬਿੰਦੀ: 'ਗ੍ਰਿਫ਼ਤਾਰ'।" },
+    { wrong: "ਗ੍ਰਿਫਤਾਰੀ", right: "ਗ੍ਰਿਫ਼ਤਾਰੀ", type: "spelling", desc: "ਪੈਰ ਬਿੰਦੀ: 'ਗ੍ਰਿਫ਼ਤਾਰੀ'।" },
+    { wrong: "ਪੁਲਸ", right: "ਪੁਲਿਸ", type: "spelling", desc: "ਪ੍ਰਮਾਣਿਤ ਰੂਪ: 'ਪੁਲਿਸ'।" },
+    { wrong: "ਕਾਰਵਾਹੀ", right: "ਕਾਰਵਾਈ", type: "spelling
